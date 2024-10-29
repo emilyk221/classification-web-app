@@ -18,3 +18,4 @@ Future development aspirations include adding a functionality for the user to up
 ## Resources
 - [Streamlit documentation](https://docs.streamlit.io/)
 - [Coursera Guided Project, "Build a Machine Learning Web App with Streamlit and Python](https://www.coursera.org/projects/machine-learning-streamlit-python)
+- [Dataset from Kaggle](https://www.kaggle.com/datasets/uciml/mushroom-classification)
