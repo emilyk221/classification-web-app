@@ -1,12 +1,14 @@
 import streamlit as st
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, roc_curve
-from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import RocCurveDisplay, PrecisionRecallDisplay
 from sklearn.metrics import precision_score, recall_score
 
 def main():
@@ -33,13 +35,32 @@ def main():
   def plot_metrics(metrics_list):
     if 'Confusion Matrix' in metrics_list:
       st.subheader('Confusion Matrix')
-      ConfusionMatrixDisplay.from_estimator(model, x_test, y_test, display_labels=class_names)
-      st.pyplot()
+      y_pred = model.predict(x_test)
+      cm = confusion_matrix(y_test, y_pred)
+      fig = plt.figure()
+      ax = fig.add_subplot()
+      sns.heatmap(cm, annot=True, fmt='g', ax=ax)
+      ax.set_xticklabels(class_names)
+      ax.set_yticklabels(class_names)
+      st.pyplot(fig)   
 
     if 'ROC Curve' in metrics_list:
       st.subheader('ROC Curve')
-      RocCurveDisplay.from_estimator(model, x_test, y_test)
-      st.pyplot()
+      fig = plt.figure()
+      ax = fig.add_subplot()
+      RocCurveDisplay.from_estimator(model, x_test, y_test, ax=ax)
+      ax.set_xlabel('False Positive Rate')
+      ax.set_ylabel('True Positive Rate')
+      st.pyplot(fig)
+
+    if 'Precision Recall Curve' in metrics_list:
+      st.subheader('Precision Recall Curve')
+      fig = plt.figure()
+      ax = fig.add_subplot()
+      PrecisionRecallDisplay.from_estimator(model, x_test, y_test, ax=ax)
+      ax.set_xlabel('Recall')
+      ax.set_ylabel('Precision')
+      st.pyplot(fig)
 
   df = load_data()
   x_train, x_test, y_train, y_test = split(df)
@@ -53,7 +74,7 @@ def main():
     kernel = st.sidebar.radio('Kernel', ('rbf', 'linear'), key='kernel')
     gamma = st.sidebar.radio('Gamma (Kernel Coefficient)', ('scale', 'auto'), key='gamma')
 
-    metrics = st.sidebar.multiselect('What metrics to plot?', ('Confusion Matrix', 'ROC Curve'))
+    metrics = st.sidebar.multiselect('What metrics to plot?', ('Confusion Matrix', 'ROC Curve', 'Precision Recall Curve'))
 
     if st.sidebar.button('Classify', key='classify'):
       st.subheader('Support Vector Machine (SVM) Results')
@@ -71,7 +92,7 @@ def main():
     n_neighbors = st.sidebar.number_input('N_neighbors', 1, 10, step=1, key='n_neighbors')
     algorithm = st.sidebar.radio('Type of algorithm', ('ball_tree', 'kd_tree', 'brute', 'auto'), key='algorithm')
     
-    metrics = st.sidebar.multiselect('What metrics to plot?', ('Confusion Matrix', 'ROC Curve'))
+    metrics = st.sidebar.multiselect('What metrics to plot?', ('Confusion Matrix', 'ROC Curve', 'Precision Recall Curve'))
 
     if st.sidebar.button('Classify', key='classify'):
       st.subheader('K-Neighbors Results')
@@ -89,7 +110,7 @@ def main():
     n_estimators = st.sidebar.number_input('The number of trees in the forest', 100, 5000, step=10, key='n_estimator')
     max_depth = st.sidebar.number_input('The maximum depth of the trees', 1, 20, step=1, key='max_depth')
 
-    metrics = st.sidebar.multiselect('What metrics to plot?', ('Confusion Matrix', 'ROC Curve'))
+    metrics = st.sidebar.multiselect('What metrics to plot?', ('Confusion Matrix', 'ROC Curve', 'Precision Recall Curve'))
 
     if st.sidebar.button('Classify', key='classify'):
       st.subheader('Random Forest Results')
