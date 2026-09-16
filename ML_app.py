@@ -83,8 +83,8 @@ def main():
       accuracy = model.score(x_test, y_test)
       y_pred = model.predict(x_test)
       st.write('Accuracy: ', accuracy)
-      st.write('Precision: ', precision_score(y_test, y_pred, labels=class_names).round(2))
-      st.write('Recall: ', recall_score(y_test, y_pred, labels=class_names).round(2))
+      st.write('Precision: ', precision_score(y_test, y_pred).round(2))
+      st.write('Recall: ', recall_score(y_test, y_pred).round(2))
       plot_metrics(metrics)
 
   if classifier == 'K-Neighbors':
